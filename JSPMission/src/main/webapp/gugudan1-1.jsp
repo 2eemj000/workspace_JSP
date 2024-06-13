@@ -5,20 +5,20 @@ String dir;
 try{
 	dir = request.getParameter("dir");
 }catch (Exception e){
-	dir="hor";
+	dir="Horizontal";
 }
 %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>구구단 <%= dir %></title>
+<title>구구단2 <%= dir %></title>
 </head>
 <body>
-<h1>구구단1-1. <%= dir %></h1>
+<h1>구구단2. <%= dir %></h1>
 
 <%
-if (dir.equals("ver")){
+if (dir.equals("Vertical")){
 	for (int i = 2; i <= 9; i++) {
 		for (int j = 1; j <= 9; j++) {
       	out.println( i + "*" + j + " = " + (i*j) +"<br/>");

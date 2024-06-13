@@ -12,10 +12,10 @@ try{
 <html>
 <head>
 <meta charset="UTF-8">
-<title>구구단2 <%= column %>column</title>
+<title>구구단3 <%= column %>column</title>
 </head>
 <body>
-<h1>구구단2. <%= column %>column</h1>
+<h1>구구단3. <%= column %>column</h1>
 <%
 for (int k = 2; k <= 9; k += column) {
 	for (int i = k; i<k+column && i<=9; i++) {
@@ -23,7 +23,6 @@ for (int k = 2; k <= 9; k += column) {
 		out.println( i + "*" + j + " = " +
 		(i*j) +"<br/>");
 		}
-		
 	}
 	 out.println("<br/>");
 	}
