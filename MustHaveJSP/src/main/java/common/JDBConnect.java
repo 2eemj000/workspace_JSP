@@ -40,7 +40,7 @@ public class JDBConnect{
 			Class.forName(driver);
 			
 			String url = application.getInitParameter("MySQLURL");
-			String id = application.getInitParameter("MySQLId");
+			String id = application.getInitParameter("MySQLID");
 			String pwd = application.getInitParameter("MySQLPwd");
 			con = DriverManager.getConnection(url,id,pwd);
 			
