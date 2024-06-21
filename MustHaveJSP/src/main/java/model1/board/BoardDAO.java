@@ -2,6 +2,7 @@ package model1.board;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class BoardDAO extends JDBConnect{
 		}
 		return totalCount;
 	}
-	//검색 조건에 맞는 게시물 목록을 반환
+	//검색 조건에 맞는 게시물 목록을 반환(페이징 기능 지원)
 	public List<BoardDTO> selectList(Map<String, Object> map){
 		List<BoardDTO> bbs = new Vector<BoardDTO>(); // 결과(게시물 목록)을 담을 변수
 		String query = "SELECT * FROM BOARD";
@@ -70,6 +71,52 @@ public class BoardDAO extends JDBConnect{
 			}
 			return bbs;
 		}
+	// 검색 조건에 맞는 게시물 목록을 반환(페이지 기능 지원)
+	public List<BoardDTO> selectListPage(Map<String,Object> map){
+		List<BoardDTO> bbs = new Vector<BoardDTO>(); // 결과(게시물목록)을 담을 변수
+		// 쿼리문 템플릿
+		String query = "select * from board ";
+		boolean isSearch = false; // 검색 조건이 있는지 여부를 체크하는 변수
+		if (map.get("searchWord")!= null && map.get("searchField") != null) {
+			query += " where "+map.get("searchField")
+					+" Like '%" +map.get("searchWord") + "%'";
+			isSearch = true;
+		}
+		query += " order by num desc limit ?,?";
+		try {
+			//쿼리문 완성
+			PreparedStatement psmt = getCon().prepareStatement(query);
+			if (isSearch) { // 검색 조건이 있을 경우에만 시작 오프셋과 페이지 크기를 설정
+	            psmt.setInt(1, (int)map.get("start"));
+	            psmt.setInt(2, (int)map.get("pageSize"));
+	        } else { // 검색 조건이 없을 경우에는 LIMIT 절에만 바로 설정
+	            psmt.setInt(1, (int)map.get("start"));
+	            psmt.setInt(2, (int)map.get("pageSize"));
+	        }
+			//쿼리문 실행
+			ResultSet rs = psmt.executeQuery();
+			
+			while (rs.next()) {
+				//한 행(게시물 하나)의 데이터를 DTO에 저장
+				BoardDTO dto = new BoardDTO();
+				dto.setNum(rs.getString("num"));
+				dto.setTitle(rs.getString("title"));
+				dto.setContent(rs.getString("content"));
+				dto.setPostdate(rs.getDate("postdate"));
+				dto.setId(rs.getString("id"));
+				dto.setVisitcount(rs.getString("visitcount"));
+				
+				//반환할 결과 목록에 게시물 추가
+				bbs.add(dto);
+			}
+		}
+		catch (Exception e) {
+			System.out.println("게시물 조회 중 예외 발생");
+			e.printStackTrace();
+		}
+		//목록 반환
+		return bbs;
+	}
 	//게시글 데이터를 받아 DB에 추가
 	public int insertWrite(BoardDTO dto) {
 		int result = 0;
@@ -128,14 +175,65 @@ public class BoardDAO extends JDBConnect{
 		String query = "UPDATE BOARD SET "
 				+ " VISITCOUNT = VISITCOUNT +1"
 				+ " WHERE NUM = ?";
+		PreparedStatement psmt = null;
 		try {
-			PreparedStatement psmt = getCon().prepareStatement(query); // 동적쿼리
+			psmt = getCon().prepareStatement(query); // 동적쿼리
 			psmt.setString(1,num); // 인파라미터를 일련번호로 설정
-			psmt.executeQuery(); // 쿼리 실행
+			psmt.executeUpdate(); // 쿼리 실행
 		}
 		catch (Exception e) {
 			System.out.println("게시물 조회수 증가 중 예외 발생");
 			e.printStackTrace();
 		}
+		finally {
+			try {
+				psmt.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
+	//지정한 게시물 수정
+	public int updateEdit(BoardDTO dto) {
+		int result = 0;
+		try {
+			//쿼리문 템플릿
+			String query = "UPDATE board SET "
+					+" title=?, content=? "
+					+" WHERE num=?";
+			//쿼리문 완성
+			PreparedStatement psmt = getCon().prepareStatement(query);
+			psmt.setString(1,dto.getTitle());
+			psmt.setString(2,dto.getContent());
+			psmt.setString(3,dto.getNum());
+			//쿼리문 실행
+			result = psmt.executeUpdate();
+		}
+		catch (Exception e) {
+			System.out.println("게시물 수정 중 예외 발생");
+			e.printStackTrace();
+		}
+		return result; // 결과반환
+	}
+	//지정한 게시물 삭제
+	public int deletePost(BoardDTO dto) {
+		int result = 0;
+		try {
+			//쿼리문 템플릿
+			String query = "DELETE FROM board WHERE num=?";
+			
+			//쿼리문 완성
+			PreparedStatement psmt = getCon().prepareStatement(query);
+			psmt.setString(1,dto.getNum());
+			
+			//쿼리문 실행
+			result = psmt.executeUpdate();
+		}
+		catch (Exception e) {
+			System.out.println("게시물 삭제 중 예외 발생");
+			e.printStackTrace();
+		}
+		return result; // 결과반환
+		}
 }

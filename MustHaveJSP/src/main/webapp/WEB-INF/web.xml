@@ -42,6 +42,14 @@
   	<param-name>MySQLPwd</param-name>
   	<param-value>tiger</param-value>
   </context-param>
+  <context-param>
+  	<param-name>POSTS_PER_PAGE</param-name>
+  	<param-value>10</param-value>
+  </context-param>
+    <context-param>
+  	<param-name>PAGES_PER_BLOCK</param-name>
+  	<param-value>5</param-value>
+  </context-param>
 </web-app>
 
 
