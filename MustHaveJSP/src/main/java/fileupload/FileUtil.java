@@ -51,7 +51,7 @@ public class FileUtil{
 		for(Part part : parts) {
 			if(!part.getName().equals("ofile"))
 				continue;
-			String partHeader = part.getHeader("contene-disposition");
+			String partHeader = part.getHeader("content-disposition");
 			String[] phArr = partHeader.split("filename=");
 			String originalFileName = phArr[1].trim().replace("\"","");
 			if (!originalFileName.isEmpty()) {
