@@ -67,4 +67,4 @@ public class MyFileDAO extends JDBConnect{ // JDBC를 통해 DB에 연결
 		}
 		return fileList;
 	} 
-}
+	}

@@ -17,14 +17,15 @@ public class JSFunction {
 		}
 		catch (Exception e) {}
 	}
-	public static void alertBack(String msg, JspWriter out) {
+	public static void alertBack(HttpServletResponse resp, String msg) {
 		try {
-			String script=""
-					+"<script>"
-					+"	alert('" + msg + "');"
-					+"	history.back();"
-					+"</script>";
-			out.println(script);
+			resp.setContentType("text/html;charset=UTF-8");
+			PrintWriter writer = resp.getWriter();
+			String script = ""
+						  + "<script>"
+						  + "	alert('" +msg+"');"
+						  + "</script>";
+			writer.print(script);
 		}
 		catch (Exception e) {}
 	}
